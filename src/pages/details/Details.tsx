@@ -51,7 +51,7 @@ function Details() {
       {
         !pokemon ? (<p> Cargando</p>) : (
             <div className="flex flex-col lg:flex-row-reverse w-full h-full">
-            <figure className="w-full h-1/3 justify-center flex p-5 bg-[#ca215a] rounded-b-full lg:h-full  lg:w-1/2">
+            <figure className="w-full h-1/3 justify-center flex p-5 bg-[#ca215a]  rounded-b-full lg:rounded-full lg:h-full  lg:w-2/3">
               <img
                 src={pokemon.image}
                 alt=""
