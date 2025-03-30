@@ -7,15 +7,16 @@ import Loader from "../components/Loader/Loader";
 
 function Home() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>();
-  const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
+  const [searchInput, setSearchInput] = useState<string>("");
 
   const getData = async (): Promise<void> => {
     try {
-      setLoading(true);
-      const response: Pokemon[] = await getAllPokemon({ page: page });
+      const response: Pokemon[] = await getAllPokemon({
+        page: page,
+        search: searchInput,
+      });
       setPokemonList(response);
-      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -29,6 +30,17 @@ function Home() {
     });
   };
 
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setSearchInput(event.target.value);
+  };
+
+  const handleSearch = (): void => {
+    getData();
+    setSearchInput("");
+  };
+
   const handlePrev = (): void => {
     if (page > 0) {
       setPage(page - 20);
@@ -39,7 +51,7 @@ function Home() {
     }
   };
 
-  console.log(page);
+  console.log(searchInput);
 
   useEffect(() => {
     getData();
@@ -54,12 +66,17 @@ function Home() {
         <div className="lg:w-1/2 flex my-5">
           <input
             type="text"
-            name=""
+            name="search"
             placeholder="Charmander"
-            id=""
+            id="search"
+            value={searchInput}
+            onChange={handleInputChange}
             className="w-full p-2 bg-white rounded-md rounded-r-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button className="bg-[#cc285f]  rounded-md rounded-l-none px-3 text-white">
+          <button
+            onClick={handleSearch}
+            className="bg-[#cc285f]  rounded-md rounded-l-none px-3 text-white"
+          >
             Search
           </button>
         </div>
@@ -76,12 +93,12 @@ function Home() {
         </div>
 
         {/* Listado de pokemon */}
-        {loading && pokemonList?.length == 0 ? (
-            <div className="w-full flex  justify-center  h-full">
-              <h1 className="text-center text-3xl text-white p-5 font-bold">
-                No se encontraron pokemon
-              </h1>
-            </div>
+        {pokemonList?.length == 0 ? (
+          <div className="w-full flex  justify-center  h-full">
+            <h1 className="text-center text-3xl text-white p-5 font-bold">
+              No se encontraron pokemon
+            </h1>
+          </div>
         ) : (
           <div className="w-full my-5 grid grid-cols-2 lg:grid-cols-5 gap-5 place-items-center">
             {pokemonList?.map((pokemon) => (

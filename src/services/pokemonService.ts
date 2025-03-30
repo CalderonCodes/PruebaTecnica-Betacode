@@ -40,7 +40,7 @@ export const getAllPokemon = async ({ page, search }: { page: number; search?: s
                             const { name, sprites } = pokemonResponse.data;
                             return {
                                 name,
-                                image: sprites.front_default
+                                image: sprites.other["official-artwork"].front_default
                             };
                         }
                         return null;
