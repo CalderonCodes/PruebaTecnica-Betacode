@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import PokeCard from "../components/Cards/PokeCard";
 import Navbar from "../components/Navigation/Navbar";
-import { getAllPokemon } from "../services/pokemonService";
-import { Pokemon } from "../interfaces/pokemonInterface";
-import Loader from "../components/Loader/Loader";
-
+import {
+  getAbilities,
+  getAllPokemon,
+  getByAbility,
+  getByType,
+  getTypes,
+} from "../services/pokemonService";
+import { ApiResponse, Pokemon } from "../interfaces/pokemonInterface";
 function Home() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>();
   const [page, setPage] = useState<number>(0);
   const [searchInput, setSearchInput] = useState<string>("");
+  const [types, setTypes] = useState<ApiResponse[]>([]);
+  const [abilities, setAbilities] = useState<ApiResponse[]>([]);
 
   const getData = async (): Promise<void> => {
     try {
@@ -17,6 +23,42 @@ function Home() {
         search: searchInput,
       });
       setPokemonList(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const filterByType = async (type: number): Promise<void> => {
+    try {
+      const response: Pokemon[] = await getByType(type);
+      setPokemonList(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const filterByAbility = async (ability: string): Promise<void> => {
+    try {
+      const response: Pokemon[] = await getByAbility(ability);
+      setPokemonList(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getTypeList = async (): Promise<void> => {
+    try {
+      const response: ApiResponse[] = await getTypes();
+      setTypes(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAbilityList = async (): Promise<void> => {
+    try {
+      const response: ApiResponse[] = await getAbilities();
+      setAbilities(response);
     } catch (error) {
       console.log(error);
     }
@@ -36,6 +78,20 @@ function Home() {
     setSearchInput(event.target.value);
   };
 
+  const handleTypeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
+    const selectedType: number = parseInt(event.target.value);
+    filterByType(selectedType)
+  }
+
+  const handleAbilityChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
+    const selectedAbility: string = event.target.value;
+    filterByAbility(selectedAbility)
+  }
+
   const handleSearch = (): void => {
     getData();
     setSearchInput("");
@@ -51,12 +107,15 @@ function Home() {
     }
   };
 
-  console.log(searchInput);
 
   useEffect(() => {
     getData();
   }, [page]);
 
+  useEffect(()=>{
+    getTypeList();
+    getAbilityList();
+  },[])
   console.log(pokemonList);
   return (
     <div className=" h-screen min-h-screen flex flex-col items-center ">
@@ -81,15 +140,42 @@ function Home() {
           </button>
         </div>
 
-        {/* Selector de tipos */}
-        <div>
-          <label htmlFor="pokemonType" className="block  text-white">
-            Select Pokémon Type:
-          </label>
-          <select
-            id="pokemonType"
-            className="w-full p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></select>
+        <div className="w-full flex justify-center gap-5">
+          {/* Selector de tipos */}
+          <div>
+            <label htmlFor="pokemonType" className="block  text-white">
+              Select Pokémon Type:
+            </label>
+            <select
+            onChange={handleTypeChange}
+              id="pokemonType"
+              className="w-full p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {types.map((type, index) => (
+                <option key={type.name} value={index + 1}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Selector de habilidades */}
+          <div>
+            <label htmlFor="pokemonAbility" className="block  text-white">
+              Select Pokémon Ability:
+            </label>
+            <select
+            onChange={handleAbilityChange}
+              id="pokemonAbility"
+              className="w-full p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {abilities.map((ability) => (
+                <option key={ability.name} value={ability.name}>
+                  {ability.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Listado de pokemon */}
