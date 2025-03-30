@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import PokeCard from "../components/Cards/PokeCard";
-import Navbar from "../components/Navigation/Navbar";
+import PokeCard from "../../components/Cards/PokeCard";
+import Navbar from "../../components/Navigation/Navbar";
 import {
   getAbilities,
   getAllPokemon,
   getByAbility,
   getByType,
   getTypes,
-} from "../services/pokemonService";
-import { ApiResponse, Pokemon } from "../interfaces/pokemonInterface";
+} from "../../services/pokemonService";
+import { ApiResponse, Pokemon } from "../../interfaces/pokemonInterface";
 function Home() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>();
   const [page, setPage] = useState<number>(0);
