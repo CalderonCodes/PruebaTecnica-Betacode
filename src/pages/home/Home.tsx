@@ -16,9 +16,12 @@ function Home() {
   const [types, setTypes] = useState<ApiResponse[]>([]);
   const [abilities, setAbilities] = useState<ApiResponse[]>([]);
 
+  //Recoleccion de datos ---------------------------------------------------------------------------------------------------
+  //Funcion que recolecta datos iniciales
   const getData = async (): Promise<void> => {
     try {
       const response: Pokemon[] = await getAllPokemon({
+        // Recibe parametros de busqueda y paginacion
         page: page,
         search: searchInput,
       });
@@ -28,24 +31,28 @@ function Home() {
     }
   };
 
+  //Funcion que recolecta datos filtrados por tipo
   const filterByType = async (type: number): Promise<void> => {
     try {
-      const response: Pokemon[] = await getByType(type);
+      const response: Pokemon[] = await getByType(type); //Recibe el tipo a filtrar
       setPokemonList(response);
     } catch (error) {
       console.log(error);
     }
   };
 
+  //Funcion que recolecta datos filtrados por habilidad
   const filterByAbility = async (ability: string): Promise<void> => {
     try {
-      const response: Pokemon[] = await getByAbility(ability);
+      const response: Pokemon[] = await getByAbility(ability); //Recibela habilidad a filtrar
       setPokemonList(response);
     } catch (error) {
       console.log(error);
     }
   };
 
+  //Poblado de selects -------------------------------------------------------------------------------------------------
+  //Funcion que recolecta los tipos disponibles
   const getTypeList = async (): Promise<void> => {
     try {
       const response: ApiResponse[] = await getTypes();
@@ -55,6 +62,7 @@ function Home() {
     }
   };
 
+  //Funcion que recolecta las habilidades disponibles
   const getAbilityList = async (): Promise<void> => {
     try {
       const response: ApiResponse[] = await getAbilities();
@@ -64,8 +72,9 @@ function Home() {
     }
   };
 
+  //Manejo de paginacion -------------------------------------------------------------------------------------------------
   const handleNext = (): void => {
-    setPage(page + 20);
+    setPage(page + 20); //Agrega un offset de 20 pokemon
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -74,7 +83,8 @@ function Home() {
 
   const handlePrev = (): void => {
     if (page > 0) {
-      setPage(page - 20);
+      //Solo disponible si no se encuentra en la pagina inicial
+      setPage(page - 20); //Resta un offset de 20 pokemon
       window.scrollTo({
         top: 0,
         behavior: "smooth",
@@ -82,43 +92,48 @@ function Home() {
     }
   };
 
+  //Manejo de eventos -------------------------------------------------------------------------------------------------
+  //Manejo de cambios en el input
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     setSearchInput(event.target.value);
   };
 
+  //Manejo de seleccion de tipo
   const handleTypeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ): void => {
     const selectedType: number = parseInt(event.target.value);
-    filterByType(selectedType)
-  }
+    filterByType(selectedType);
+  };
 
+  //Manejo de seleccion de habilidad
   const handleAbilityChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ): void => {
     const selectedAbility: string = event.target.value;
-    filterByAbility(selectedAbility)
-  }
+    filterByAbility(selectedAbility);
+  };
 
+  //Manejo de busqueda
   const handleSearch = (): void => {
     getData();
     setSearchInput("");
   };
 
-
-
-
+  //Use effects -------------------------------------------------------------------------------------------------
+  //Realiza la recolecta de datos cada vez que la pagina cambia
   useEffect(() => {
     getData();
   }, [page]);
 
-  useEffect(()=>{
+  //Realiza la poblacion de selects cada vez que se monta el componente
+  useEffect(() => {
     getTypeList();
     getAbilityList();
-  },[])
-  console.log(pokemonList);
+  }, []);
+
   return (
     <div className=" h-screen min-h-screen flex flex-col items-center ">
       <Navbar />
@@ -149,7 +164,7 @@ function Home() {
               Select Pokémon Type:
             </label>
             <select
-            onChange={handleTypeChange}
+              onChange={handleTypeChange}
               id="pokemonType"
               className="w-full p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -167,7 +182,7 @@ function Home() {
               Select Pokémon Ability:
             </label>
             <select
-            onChange={handleAbilityChange}
+              onChange={handleAbilityChange}
               id="pokemonAbility"
               className="w-full p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >

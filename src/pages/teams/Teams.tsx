@@ -4,22 +4,25 @@ import Navbar from "../../components/Navigation/Navbar";
 import { Team } from "../../interfaces/pokemonInterface";
 
 function Teams() {
+  //Definicion de estados--------------------------------------------------
   const [teams, setTeams] = useState<Team[]>(() => {
-    const savedTeams = localStorage.getItem("teams");
+    const savedTeams = localStorage.getItem("teams"); //Se obtienen equipos actuales del local storage
     return savedTeams ? JSON.parse(savedTeams) : [];
   });
 
+  //Manejo de eventos -----------------------------------------------------------------
+  //Manejo de creacion de un nuevo equipo
   const addTeam = () => {
     const newTeam = {
       id: teams.length + 1,
-      name: `Team ${teams.length + 1}`, // Nombre único basado en la longitud actual
+      name: `Team ${teams.length + 1}`, // Nombre basado en la cantidad de tipos actual
       pokemon: [], // Arreglo vacío de miembros
     };
 
     const updatedTeams = [...teams, newTeam];
     setTeams(updatedTeams);
 
-    // Guarda los equipos en el localStorage
+    // Actualiza la lista de equipos en el local storage
     localStorage.setItem("teams", JSON.stringify(updatedTeams));
   };
 

@@ -12,7 +12,9 @@ import TypeCard from "../../components/Cards/TypeCard";
 import { capitalizeFirstLetter } from "../../utils/functions";
 
 function Details() {
-  const { name } = useParams<{ name: string }>();
+  const { name } = useParams<{ name: string }>(); //Obtiene parametro de la url
+
+  //Definicion de estados
   const [pokemon, setPokemon] = useState<PokeDetails>();
   const [teams, setTeams] = useState<Team[]>(() => {
     // Carga los equipos iniciales desde el localStorage
@@ -22,10 +24,26 @@ function Details() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [pokemonAdd, setPokemonAdd] = useState<TeamPokemon>();
 
+  //Recoleccion de datos ---------------------------------------------------------------------------------------------------
+  //Funcion que recolecta datos iniciales
+  const getData = async (): Promise<void> => {
+    try {
+      if (!name) return;
 
+      const pokeData = await getPokemon(name);
+
+      if (pokeData) {
+        setPokemon(pokeData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //Manejo de eventos -------------------------------------------------------------------------------------------------
+  //Manejo de agregar al equipo
   const handleAddTeam = () => {
-    if (pokemon) {
-      setPokemonAdd({
+    if (pokemon) { //Valida que el estado este seteado
+      setPokemonAdd({ //Setea el DTO
         id: pokemon.id,
         name: pokemon.name,
         image: pokemon.sprite,
@@ -35,40 +53,13 @@ function Details() {
     console.log(teams);
   };
 
+  //Manejo de modal
   const handleCloseModal = () => {
     setShowModal(false); // Oculta el modal
   };
 
-  const getData = async (): Promise<void> => {
-    try {
-      if (!name) {
-        console.log("a");
-        return;
-      }
-      const response = await getPokemon(name);
-      if (response) {
-        const pokeData: PokeDetails = {
-          id: response.id,
-          name: response.name,
-          abilities: response.abilities.map(
-            (ability: any) => ability.ability.name
-          ),
-          types: response.types.map((type: any) => type.type.name),
-          stats: response.stats.map((stat: any) => ({
-            base_stat: stat.base_stat,
-            name: stat.stat.name,
-          })),
-          image: response.sprites.other["official-artwork"].front_default,
-          sprite:
-            response.sprites.versions["generation-viii"].icons.front_default,
-        };
-        setPokemon(pokeData);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  //Use effects -------------------------------------------------------------------------------------------------
+  //Recolecta datos de pokemon al montar el componente
   useEffect(() => {
     getData();
   }, []);
@@ -130,6 +121,7 @@ function Details() {
           </div>
         </div>
       )}
+      {/* Modal ------------------------------------------------------------------------------------ */}
       {showModal && (
         <div className="fixed top-0 text-black left-0 w-full h-full flex justify-center items-center bg-black/70 shadow-[0px_5px_1px_rgba(221,_221,_221,_1),_0_5px_10px_rgba(204,_204,_204,_1)]">
           <div className="bg-white p-6 w-11/12 lg:w-1/3 rounded-md shadow-md">
@@ -147,29 +139,29 @@ function Details() {
                       ""
                     ) : (
                       <button
-                        onClick={() => {
+                        onClick={() => { 
+                          // Se actualiza el estado de equipos actuales con la informacion del localstorage
                           const updatedTeams = [...teams];
+                          // Se busca el equipo con el index actual
                           const teamIndex = updatedTeams.findIndex(
                             (t) => t.name === team.name
                           );
 
+                          //Si el equipo existe y el pokemon esta seteado se agrega el pokemon al equipo
                           if (teamIndex !== -1 && pokemonAdd) {
                             updatedTeams[teamIndex].pokemon =
-                              updatedTeams[teamIndex].pokemon || [];
+                            updatedTeams[teamIndex].pokemon || [];
                             updatedTeams[teamIndex].pokemon.push(pokemonAdd);
 
+                            //Se actualiza el local storage
                             localStorage.setItem(
                               "teams",
                               JSON.stringify(updatedTeams)
                             );
                             setTeams(updatedTeams);
-                            console.log(
-                              `Added ${pokemonAdd.name} to ${team.name}`
-                            );
-
                             handleCloseModal();
                           } else {
-                            alert("invalid team");
+                            alert("Invalid team");
                           }
                         }}
                         className="bg-[#cc285f] text-white px-3 py-1 rounded-md "

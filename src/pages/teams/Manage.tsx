@@ -6,16 +6,20 @@ import { getAllPokemon, getPokemon } from "../../services/pokemonService";
 import { capitalizeFirstLetter } from "../../utils/functions";
 
 function Manage() {
-  const { id } = useParams<{ id: string }>(); // Obtener ID de la URL
+  const { id } = useParams<{ id: string }>(); // Obtener parametro de la url
+
+  //Definicion de estados---------------------------------------------------------------------------------------------------
   const [teams, setTeams] = useState<Team[]>([]);
   const [team, setTeam] = useState<Team | null>(null);
   const [pokemonList, setPokemonList] = useState<Pokemon[]>();
   const [searchInput, setSearchInput] = useState<string>("");
   const [newMember, setNewMember] = useState<Pokemon>();
   const [page, setPage] = useState<number>(0);
-  const [tabChange, setTabChange] = useState<boolean>(false)
+  const [tabChange, setTabChange] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  //Recoleccion de datos ---------------------------------------------------------------------------------------------------
+  //Funcion que recolecta datos iniciales
   const getData = async (): Promise<void> => {
     try {
       const response: Pokemon[] = await getAllPokemon({
@@ -28,42 +32,19 @@ function Manage() {
     }
   };
 
+  //Funcion que recolecta datos del pokemon a agregar
   const getPokemonData = async (name: string): Promise<void> => {
     try {
       const response = await getPokemon(name);
       if (response) {
-        const pokeData: Pokemon = {
-          name: response.name,
-          image:
-            response.sprites.versions["generation-viii"].icons.front_default,
-          sprite: response.sprites.versions["generation-viii"].icons.front_default,
-        };
-        setNewMember(pokeData);
+        setNewMember(response);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setSearchInput(event.target.value);
-  };
-
-  const handleTabChange = (): void => {
-    setTabChange(!tabChange)
-  };
-
-  const handleSearch = (): void => {
-    getData();
-    setSearchInput("");
-  };
-
-  const handleAdd = (name: string): void => {
-    getPokemonData(name);
-  };
-
+  //Manejo de paginacion -------------------------------------------------------------------------------------------------
   const handleNext = (): void => {
     setPage(page + 20);
     window.scrollTo({
@@ -72,8 +53,6 @@ function Manage() {
     });
   };
   console.log(page);
-
-  
 
   const handlePrev = (): void => {
     if (page > 0) {
@@ -85,34 +64,96 @@ function Manage() {
     }
   };
 
+  //Manejo de eventos -------------------------------------------------------------------------------------------------
+  //Manejo de cambios en el input
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setSearchInput(event.target.value);
+  };
+
+  //Manejo de cambio de pestaña en mobile
+  const handleTabChange = (): void => {
+    setTabChange(!tabChange);
+  };
+
+  //Manejo de busqueda
+  const handleSearch = (): void => {
+    getData();
+    setSearchInput("");
+  };
+
+  //Manejo de agregar pokemon a equipo
+  const handleAdd = (name: string): void => {
+    getPokemonData(name);
+  };
+
+  //Funcion para agregar pokemon al equipo
   const addPokemonToTeam = () => {
-    if (!team || !newMember) return;
-  
-    if (team.pokemon.some(p => p.name === newMember.name)) {
-      alert("Este Pokémon ya está en el equipo.");
+    if (!team || !newMember) return; //Si no existe equipo o pokemon seleccionado, no se ejecuta nada
+
+    if (team.pokemon.some((p) => p.name === newMember.name)) {
+      alert("Este Pokémon ya está en el equipo."); //Valida que el pokemon ya este en el equipo
       return;
     }
-  
+
     if (team.pokemon.length >= 6) {
-      alert("El equipo ya tiene 6 Pokémon. No puedes agregar más.");
+      alert("El equipo ya tiene 6 Pokémon. No puedes agregar más."); //Valida que el equipo no este completo
       return;
     }
-  
+
+    //Actualiza miembros del equipo
     const updatedTeam = { ...team, pokemon: [...team.pokemon, newMember] };
-  
-    const updatedTeams = teams.map(t => (t.id === team.id ? updatedTeam : t));
-  
+    const updatedTeams = teams.map((t) => (t.id === team.id ? updatedTeam : t));
     setTeams(updatedTeams);
     setTeam(updatedTeam);
+
+    //Inserta el equipo al local storage
     localStorage.setItem("teams", JSON.stringify(updatedTeams));
-  
     setNewMember(undefined);
   };
 
+  // Función para eliminar un Pokémon del equipo
+  const removePokemon = (pokemonName: string) => {
+    if (!team) return;
+
+    // Filtra el Pokémon a eliminar
+    const updatedPokemon = team.pokemon.filter((p) => p.name !== pokemonName);
+    const updatedTeam = { ...team, pokemon: updatedPokemon };
+
+    // Actualiza la lista de equipos
+    const updatedTeams = teams.map((t) => (t.id === team.id ? updatedTeam : t));
+
+    // Actualiza el equipo en el local storage
+    setTeams(updatedTeams);
+    setTeam(updatedTeam);
+    localStorage.setItem("teams", JSON.stringify(updatedTeams));
+  };
+
+  const handleDeleteTeam = () => {
+    if (!team) return; //Si el equipo no existe no se ejecuta
+
+    const confirmDelete = window.confirm( //Ventana de confirmacion
+      `¿Estás seguro de que quieres eliminar el equipo "${team.name}"?`
+    );
+    if (!confirmDelete) return;
+
+    //Busca el equipo por su id en la lista de equipos
+    const updatedTeams = teams.filter((t) => t.id !== team.id);
+    setTeams(updatedTeams);
+    //Lo elimina y actualiza local storage
+    localStorage.setItem("teams", JSON.stringify(updatedTeams));
+
+    navigate("/teams"); // Redirige a la lista de equipos
+  };
+
+  //Use effects -------------------------------------------------------------------------------------------------
+  //Realiza la recolecta de datos cada vez que la pagina cambia
   useEffect(() => {
     getData();
   }, [page]);
 
+  //Obtiene pokemon del local storage
   useEffect(() => {
     const savedTeams = localStorage.getItem("teams");
     if (savedTeams) {
@@ -123,41 +164,12 @@ function Manage() {
     }
   }, [id]);
 
+  //Realiza logica de agregar pokemon a equipo cada vez que cambia el pokemon a agregar
   useEffect(() => {
     if (newMember) {
       addPokemonToTeam();
     }
   }, [newMember]);
-
-  // Función para eliminar un Pokémon del equipo
-  const removePokemon = (pokemonName: string) => {
-    if (!team) return;
-
-    // Filtrar el Pokémon a eliminar
-    const updatedPokemon = team.pokemon.filter((p) => p.name !== pokemonName);
-    const updatedTeam = { ...team, pokemon: updatedPokemon };
-
-    // Actualizar la lista de equipos
-    const updatedTeams = teams.map((t) => (t.id === team.id ? updatedTeam : t));
-
-    // Guardar en el estado y localStorage
-    setTeams(updatedTeams);
-    setTeam(updatedTeam);
-    localStorage.setItem("teams", JSON.stringify(updatedTeams));
-  };
-
-  const handleDeleteTeam = () => {
-    if (!team) return;
-  
-    const confirmDelete = window.confirm(`¿Estás seguro de que quieres eliminar el equipo "${team.name}"?`);
-    if (!confirmDelete) return;
-  
-    const updatedTeams = teams.filter(t => t.id !== team.id);
-    setTeams(updatedTeams);
-    localStorage.setItem("teams", JSON.stringify(updatedTeams));
-  
-    navigate("/teams"); // Redirigir a la lista de equipos
-  };
 
   if (!team) {
     return <p className="text-white">Equipo no encontrado</p>;
@@ -168,20 +180,27 @@ function Manage() {
       <Navbar />
       <div className="flex gap-5 ">
         <h1 className="text-3xl font-bold">{team.name}</h1>
-        <button onClick={handleDeleteTeam} 
-        className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold">
+        <button
+          onClick={handleDeleteTeam}
+          className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold"
+        >
           Delete
         </button>
       </div>
       <div className="flex lg:hidden gap-2">
         <button
-        onClick={handleTabChange}
-         className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold">
+          onClick={handleTabChange}
+          className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold"
+        >
           Change Tab
         </button>
       </div>
       <div className="grid-cols-1 lg:grid-cols-2 grid w-11/12 overflow-hidden justify-center">
-        <div className={`w-full ${!tabChange ? "flex" : "hidden"} lg:flex flex-col gap-2 lg:px-10 py-5`}>
+        <div
+          className={`w-full ${
+            !tabChange ? "flex" : "hidden"
+          } lg:flex flex-col gap-2 lg:px-10 py-5`}
+        >
           {team.pokemon.map((pokemon) => (
             <div
               key={pokemon.name}
@@ -194,7 +213,9 @@ function Manage() {
                   alt=""
                 />
               </figure>
-              <p className="font-bold text-lg">{capitalizeFirstLetter(pokemon.name)}</p>
+              <p className="font-bold text-lg">
+                {capitalizeFirstLetter(pokemon.name)}
+              </p>
               <button
                 onClick={() => removePokemon(pokemon.name)}
                 className="bg-[#cc285f] text-white px-2 py-1 lg:px-4 font-bold rounded "
@@ -205,7 +226,11 @@ function Manage() {
           ))}
         </div>
         {pokemonList && (
-          <div className={`w-full ${tabChange ? "flex" : "hidden"} lg:flex flex-col gap-2 lg:px-10`}>
+          <div
+            className={`w-full ${
+              tabChange ? "flex" : "hidden"
+            } lg:flex flex-col gap-2 lg:px-10`}
+          >
             <div className="lg:w-full flex my-5">
               <input
                 type="text"
@@ -245,7 +270,9 @@ function Manage() {
             </div>
 
             <div
-              className={`flex flex-col gap-2 max-h-1/4  lg:h-[27%]  ${pokemonList.length > 1 && "overflow-y-scroll"} 
+              className={`flex flex-col gap-2 max-h-1/4  lg:h-[27%]  ${
+                pokemonList.length > 1 && "overflow-y-scroll"
+              } 
                           [&::-webkit-scrollbar]:w-2
                         [&::-webkit-scrollbar-track]:bg-gray-100
                         [&::-webkit-scrollbar-thumb]:bg-gray-300
@@ -264,7 +291,9 @@ function Manage() {
                       alt=""
                     />
                   </figure>
-                  <p className="font-bold text-lg">{capitalizeFirstLetter(pokemon.name)}</p>
+                  <p className="font-bold text-lg">
+                    {capitalizeFirstLetter(pokemon.name)}
+                  </p>
                   <button
                     onClick={() => handleAdd(pokemon.name)}
                     className="bg-[#cc285f] text-white px-2 lg:px-4 font-bold py-1 rounded "
