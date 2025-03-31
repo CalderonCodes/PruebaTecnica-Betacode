@@ -11,6 +11,7 @@ function Teams() {
 
   const addTeam = () => {
     const newTeam = {
+      id: teams.length + 1,
       name: `Team ${teams.length + 1}`, // Nombre único basado en la longitud actual
       pokemon: [], // Arreglo vacío de miembros
     };

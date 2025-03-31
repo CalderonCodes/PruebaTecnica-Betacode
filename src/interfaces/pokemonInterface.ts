@@ -1,6 +1,7 @@
 export interface Pokemon {
   name: string;
   image: string;
+  sprite: string;
 }
 
 export interface PokeDetails {
@@ -20,6 +21,7 @@ export interface TeamPokemon {
 }
 
 export interface Team {
+  id: number;
   name: string;
   pokemon: Pokemon[];
 }

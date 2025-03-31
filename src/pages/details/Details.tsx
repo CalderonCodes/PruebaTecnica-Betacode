@@ -30,11 +30,11 @@ function Details() {
       setPokemonAdd({
         id: pokemon.id,
         name: pokemon.name,
-        image: pokemon.sprite
-      })
+        image: pokemon.sprite,
+      });
     }
-    setShowModal(true)
-    console.log(teams)
+    setShowModal(true);
+    console.log(teams);
   };
 
   const handleCloseModal = () => {
@@ -123,8 +123,10 @@ function Details() {
                 ))}
               </div>
             </section>
-            <button onClick={handleAddTeam} 
-            className="bg-[#cc285f] text-white font-bold text-lg px-3 py-1 rounded-xl">
+            <button
+              onClick={handleAddTeam}
+              className="bg-[#cc285f] text-white font-bold text-lg px-3 py-1 rounded-xl"
+            >
               Add to my team
             </button>
           </div>

@@ -72,6 +72,16 @@ function Home() {
     });
   };
 
+  const handlePrev = (): void => {
+    if (page > 0) {
+      setPage(page - 20);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -97,15 +107,7 @@ function Home() {
     setSearchInput("");
   };
 
-  const handlePrev = (): void => {
-    if (page > 0) {
-      setPage(page - 20);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
-  };
+
 
 
   useEffect(() => {
@@ -192,6 +194,7 @@ function Home() {
                 key={pokemon.name}
                 name={pokemon.name}
                 image={pokemon.image}
+                sprite={pokemon.sprite}
               />
             ))}
           </div>

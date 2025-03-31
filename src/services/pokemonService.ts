@@ -33,7 +33,8 @@ export const getAllPokemon = async ({ page, search }: { page: number; search?: s
                             const { name, sprites } = pokemonResponse.data;
                             return {
                                 name,
-                                image: sprites.other["official-artwork"].front_default
+                                image: sprites.other["official-artwork"].front_default,
+                                sprite: sprites.versions["generation-viii"].icons.front_default
                             };
                         }
                         return null;
