@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Pokemon, Team, TeamPokemon } from "../../interfaces/pokemonInterface";
+import { Pokemon, Team } from "../../interfaces/pokemonInterface";
 import Navbar from "../../components/Navigation/Navbar";
 import { getAllPokemon, getPokemon } from "../../services/pokemonService";
 
@@ -10,7 +10,7 @@ function Manage() {
   const [team, setTeam] = useState<Team | null>(null);
   const [pokemonList, setPokemonList] = useState<Pokemon[]>();
   const [searchInput, setSearchInput] = useState<string>("");
-  const [newMember, setNewMember] = useState<TeamPokemon>();
+  const [newMember, setNewMember] = useState<Pokemon>();
   const [page, setPage] = useState<number>(0);
   const [tabChange, setTabChange] = useState<boolean>(false)
 
@@ -30,11 +30,11 @@ function Manage() {
     try {
       const response = await getPokemon(name);
       if (response) {
-        const pokeData: TeamPokemon = {
-          id: response.id,
+        const pokeData: Pokemon = {
           name: response.name,
           image:
             response.sprites.versions["generation-viii"].icons.front_default,
+          sprite: response.sprites.versions["generation-viii"].icons.front_default,
         };
         setNewMember(pokeData);
       }
@@ -71,6 +71,8 @@ function Manage() {
   };
   console.log(page);
 
+  
+
   const handlePrev = (): void => {
     if (page > 0) {
       setPage(page - 20);
@@ -79,6 +81,36 @@ function Manage() {
         behavior: "smooth",
       });
     }
+  };
+
+  const addPokemonToTeam = () => {
+    if (!team || !newMember) return;
+  
+    // Verificar si el Pokémon ya está en el equipo
+    if (team.pokemon.some(p => p.name === newMember.name)) {
+      alert("Este Pokémon ya está en el equipo.");
+      return;
+    }
+  
+    // Verificar si el equipo ya tiene 6 Pokémon (opcional)
+    if (team.pokemon.length >= 6) {
+      alert("El equipo ya tiene 6 Pokémon. No puedes agregar más.");
+      return;
+    }
+  
+    // Agregar el nuevo Pokémon al equipo
+    const updatedTeam = { ...team, pokemon: [...team.pokemon, newMember] };
+  
+    // Actualizar la lista de equipos
+    const updatedTeams = teams.map(t => (t.id === team.id ? updatedTeam : t));
+  
+    // Guardar cambios en localStorage
+    setTeams(updatedTeams);
+    setTeam(updatedTeam);
+    localStorage.setItem("teams", JSON.stringify(updatedTeams));
+  
+    // Limpiar el estado de newMember después de agregarlo
+    setNewMember(undefined);
   };
 
   useEffect(() => {
@@ -94,6 +126,12 @@ function Manage() {
       setTeam(foundTeam || null);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (newMember) {
+      addPokemonToTeam();
+    }
+  }, [newMember]);
 
   // Función para eliminar un Pokémon del equipo
   const removePokemon = (pokemonName: string) => {
@@ -157,7 +195,7 @@ function Manage() {
           ))}
         </div>
         {pokemonList && (
-          <div className={`w-full ${tabChange ? "flex" : "hidden"} flex flex-col gap-2 lg:px-10`}>
+          <div className={`w-full ${tabChange ? "flex" : "hidden"} lg:flex flex-col gap-2 lg:px-10`}>
             <div className="lg:w-full flex my-5">
               <input
                 type="text"
