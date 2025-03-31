@@ -12,6 +12,7 @@ function Manage() {
   const [searchInput, setSearchInput] = useState<string>("");
   const [newMember, setNewMember] = useState<TeamPokemon>();
   const [page, setPage] = useState<number>(0);
+  const [tabChange, setTabChange] = useState<boolean>(false)
 
   const getData = async (): Promise<void> => {
     try {
@@ -46,6 +47,10 @@ function Manage() {
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     setSearchInput(event.target.value);
+  };
+
+  const handleTabChange = (): void => {
+    setTabChange(!tabChange)
   };
 
   const handleSearch = (): void => {
@@ -114,9 +119,21 @@ function Manage() {
   return (
     <div className="h-screen  w-full flex flex-col gap-3 items-center text-white">
       <Navbar />
-      <h1 className="text-3xl font-bold">{team.name}</h1>
-      <div className="grid-cols-2 grid w-11/12 overflow-hidden justify-center">
-        <div className="w-full  flex flex-col gap-2 px-10 py-5">
+      <div className="flex gap-5 ">
+        <h1 className="text-3xl font-bold">{team.name}</h1>
+        <button className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold">
+          Delete
+        </button>
+      </div>
+      <div className="flex lg:hidden gap-2">
+        <button
+        onClick={handleTabChange}
+         className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold">
+          Change Tab
+        </button>
+      </div>
+      <div className="grid-cols-1 lg:grid-cols-2 grid w-11/12 overflow-hidden justify-center">
+        <div className={`w-full ${!tabChange ? "flex" : "hidden"} lg:flex flex-col gap-2 lg:px-10 py-5`}>
           {team.pokemon.map((pokemon) => (
             <div
               key={pokemon.name}
@@ -140,8 +157,8 @@ function Manage() {
           ))}
         </div>
         {pokemonList && (
-          <div className="w-full flex flex-col gap-2 px-10">
-            <div className="lg:w-full flex my-5"> 
+          <div className={`w-full ${tabChange ? "flex" : "hidden"} flex flex-col gap-2 lg:px-10`}>
+            <div className="lg:w-full flex my-5">
               <input
                 type="text"
                 name="search"
@@ -180,12 +197,12 @@ function Manage() {
             </div>
 
             <div
-              className="flex flex-col gap-2 h-[27%]  overflow-y-scroll
+              className={`flex flex-col gap-2 max-h-1/4  lg:h-[27%]  ${pokemonList.length > 1 && "overflow-y-scroll"} 
                           [&::-webkit-scrollbar]:w-2
                         [&::-webkit-scrollbar-track]:bg-gray-100
                         [&::-webkit-scrollbar-thumb]:bg-gray-300
                         dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-                        dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+                        dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500`}
             >
               {pokemonList.map((pokemon) => (
                 <div
