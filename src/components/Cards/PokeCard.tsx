@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Pokemon } from "../../interfaces/pokemonInterface";
+import { capitalizeFirstLetter } from "../../utils/functions";
 
 
 export default function PokeCard({name, image}: Pokemon) {
@@ -8,7 +9,7 @@ export default function PokeCard({name, image}: Pokemon) {
           <figure className="w-full h-3/4 justify-center flex p-5 bg-[#ca215a]  rounded-xl ">
               <img src={image} alt="" className=" object-contain"/>
           </figure>
-          <p className="text-[#cc285f] font-extrabold">{name}</p>
+          <p className="text-[#cc285f] font-extrabold">{capitalizeFirstLetter(name)}</p>
       </Link>
     )
   }

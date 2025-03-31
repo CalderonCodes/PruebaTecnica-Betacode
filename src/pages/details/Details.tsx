@@ -9,6 +9,7 @@ import {
   TeamPokemon,
 } from "../../interfaces/pokemonInterface";
 import TypeCard from "../../components/Cards/TypeCard";
+import { capitalizeFirstLetter } from "../../utils/functions";
 
 function Details() {
   const { name } = useParams<{ name: string }>();
@@ -21,9 +22,6 @@ function Details() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [pokemonAdd, setPokemonAdd] = useState<TeamPokemon>();
 
-  const capitalizeFirstLetter = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
 
   const handleAddTeam = () => {
     if (pokemon) {

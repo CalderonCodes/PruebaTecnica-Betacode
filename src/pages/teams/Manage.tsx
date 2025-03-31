@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Pokemon, Team } from "../../interfaces/pokemonInterface";
 import Navbar from "../../components/Navigation/Navbar";
 import { getAllPokemon, getPokemon } from "../../services/pokemonService";
+import { capitalizeFirstLetter } from "../../utils/functions";
 
 function Manage() {
   const { id } = useParams<{ id: string }>(); // Obtener ID de la URL
@@ -13,6 +14,7 @@ function Manage() {
   const [newMember, setNewMember] = useState<Pokemon>();
   const [page, setPage] = useState<number>(0);
   const [tabChange, setTabChange] = useState<boolean>(false)
+  const navigate = useNavigate();
 
   const getData = async (): Promise<void> => {
     try {
@@ -86,30 +88,24 @@ function Manage() {
   const addPokemonToTeam = () => {
     if (!team || !newMember) return;
   
-    // Verificar si el Pokémon ya está en el equipo
     if (team.pokemon.some(p => p.name === newMember.name)) {
       alert("Este Pokémon ya está en el equipo.");
       return;
     }
   
-    // Verificar si el equipo ya tiene 6 Pokémon (opcional)
     if (team.pokemon.length >= 6) {
       alert("El equipo ya tiene 6 Pokémon. No puedes agregar más.");
       return;
     }
   
-    // Agregar el nuevo Pokémon al equipo
     const updatedTeam = { ...team, pokemon: [...team.pokemon, newMember] };
   
-    // Actualizar la lista de equipos
     const updatedTeams = teams.map(t => (t.id === team.id ? updatedTeam : t));
   
-    // Guardar cambios en localStorage
     setTeams(updatedTeams);
     setTeam(updatedTeam);
     localStorage.setItem("teams", JSON.stringify(updatedTeams));
   
-    // Limpiar el estado de newMember después de agregarlo
     setNewMember(undefined);
   };
 
@@ -150,6 +146,19 @@ function Manage() {
     localStorage.setItem("teams", JSON.stringify(updatedTeams));
   };
 
+  const handleDeleteTeam = () => {
+    if (!team) return;
+  
+    const confirmDelete = window.confirm(`¿Estás seguro de que quieres eliminar el equipo "${team.name}"?`);
+    if (!confirmDelete) return;
+  
+    const updatedTeams = teams.filter(t => t.id !== team.id);
+    setTeams(updatedTeams);
+    localStorage.setItem("teams", JSON.stringify(updatedTeams));
+  
+    navigate("/teams"); // Redirigir a la lista de equipos
+  };
+
   if (!team) {
     return <p className="text-white">Equipo no encontrado</p>;
   }
@@ -159,7 +168,8 @@ function Manage() {
       <Navbar />
       <div className="flex gap-5 ">
         <h1 className="text-3xl font-bold">{team.name}</h1>
-        <button className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold">
+        <button onClick={handleDeleteTeam} 
+        className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold">
           Delete
         </button>
       </div>
@@ -184,10 +194,10 @@ function Manage() {
                   alt=""
                 />
               </figure>
-              <p>{pokemon.name}</p>
+              <p className="font-bold text-lg">{capitalizeFirstLetter(pokemon.name)}</p>
               <button
                 onClick={() => removePokemon(pokemon.name)}
-                className="bg-[#cc285f] text-white px-2 py-1 rounded "
+                className="bg-[#cc285f] text-white px-2 py-1 lg:px-4 font-bold rounded "
               >
                 Remove
               </button>
@@ -254,10 +264,10 @@ function Manage() {
                       alt=""
                     />
                   </figure>
-                  <p>{pokemon.name}</p>
+                  <p className="font-bold text-lg">{capitalizeFirstLetter(pokemon.name)}</p>
                   <button
                     onClick={() => handleAdd(pokemon.name)}
-                    className="bg-[#cc285f] text-white px-2 py-1 rounded "
+                    className="bg-[#cc285f] text-white px-2 lg:px-4 font-bold py-1 rounded "
                   >
                     Add
                   </button>
