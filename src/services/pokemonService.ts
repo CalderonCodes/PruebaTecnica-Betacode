@@ -32,8 +32,9 @@ export const getAllPokemon = async ({ page, search }: { page: number; search?: s
                     try {
                         const pokemonResponse = await axios.get(pokemon.url || `https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
                         if (pokemonResponse.status === 200) {
-                            const { name, sprites } = pokemonResponse.data;
+                            const { name, sprites, id } = pokemonResponse.data;
                             return {
+                                id,
                                 name,
                                 image: sprites.other["official-artwork"].front_default,
                                 sprite: sprites.versions["generation-viii"].icons.front_default
