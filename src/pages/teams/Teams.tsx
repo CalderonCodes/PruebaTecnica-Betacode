@@ -2,8 +2,10 @@ import { useState } from "react";
 import TeamCard from "../../components/Cards/TeamCard";
 import Navbar from "../../components/Navigation/Navbar";
 import { Team } from "../../interfaces/pokemonInterface";
+import { useNavigate } from "react-router-dom";
 
 function Teams() {
+  const navigate = useNavigate();
   //Definicion de estados--------------------------------------------------
   const [teams, setTeams] = useState<Team[]>(() => {
     const savedTeams = localStorage.getItem("teams"); //Se obtienen equipos actuales del local storage
@@ -24,6 +26,8 @@ function Teams() {
 
     // Actualiza la lista de equipos en el local storage
     localStorage.setItem("teams", JSON.stringify(updatedTeams));
+
+    navigate(`/teams/${newTeam.id}`)
   };
 
   return (

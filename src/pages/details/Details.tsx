@@ -52,7 +52,6 @@ function Details() {
       });
     }
     setShowModal(true);
-    console.log(teams);
   };
 
   //Manejo de modal
@@ -136,7 +135,7 @@ function Details() {
                 teams.map((team, index) => (
                   <div
                     key={index}
-                    className="p-3  rounded-md flex justify-between items-center "
+                    className="p-3  rounded-md flex justify-between border border-[#cc285f] items-center "
                   >
                     <span>{team.name}</span>
                     <span>{team.pokemon.length} / 6</span>
@@ -154,6 +153,15 @@ function Details() {
 
                           //Si el equipo existe y el pokemon esta seteado se agrega el pokemon al equipo
                           if (teamIndex !== -1 && pokemonAdd) {
+                            const teamPokemon = updatedTeams[teamIndex].pokemon || [];
+
+                            // Verifica si el Pokémon ya está en el equipo
+                            const isAlreadyInTeam = teamPokemon.some((p) => p.name === pokemonAdd.name);
+                      
+                            if (isAlreadyInTeam) {
+                              alert("This Pokémon is already in the team.");
+                              return; // Detiene la ejecución si ya está en el equipo
+                            }
                             updatedTeams[teamIndex].pokemon =
                               updatedTeams[teamIndex].pokemon || [];
                             updatedTeams[teamIndex].pokemon.push(pokemonAdd);

@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Pokemon, Team } from "../../interfaces/pokemonInterface";
 import Navbar from "../../components/Navigation/Navbar";
 import { getAllPokemon, getPokemon } from "../../services/pokemonService";
-import { capitalizeFirstLetter } from "../../utils/functions";
 import NewMemberCard from "../../components/Cards/NewMemberCard";
 import MemberCard from "../../components/Cards/MemberCard";
-
-
 
 function Manage() {
   const { id } = useParams<{ id: string }>(); // Obtener parametro de la url
@@ -21,6 +18,8 @@ function Manage() {
   const [page, setPage] = useState<number>(0);
   const [tabChange, setTabChange] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [editing, setEditing] = useState<boolean>(false);
+  const [teamName, setTeamName] = useState<string>(team?.name || "");
 
   //Recoleccion de datos ---------------------------------------------------------------------------------------------------
   //Funcion que recolecta datos iniciales
@@ -60,7 +59,6 @@ function Manage() {
       behavior: "smooth",
     });
   };
-  console.log(page);
 
   const handlePrev = (): void => {
     if (page > 0) {
@@ -96,17 +94,41 @@ function Manage() {
     getPokemonData(name);
   };
 
+  //Manejo del input de nombre de equipo
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTeamName(e.target.value);
+  };
+
+  //Manejo de edicion
+  const handleEditName = () => {
+    setEditing(true);
+  };
+
+  //Guardar nuevo nombre
+  const handleSaveName = () => {
+    if (!team || teamName.trim() === "") return;
+
+    const updatedTeam = { ...team, name: teamName };
+    const updatedTeams = teams.map((t) => (t.id === team.id ? updatedTeam : t));
+
+    setTeams(updatedTeams);
+    setTeam(updatedTeam);
+    localStorage.setItem("teams", JSON.stringify(updatedTeams));
+
+    setEditing(false);
+  };
+
   //Funcion para agregar pokemon al equipo
   const addPokemonToTeam = () => {
     if (!team || !newMember) return; //Si no existe equipo o pokemon seleccionado, no se ejecuta nada
 
     if (team.pokemon.some((p) => p.name === newMember.name)) {
-      alert("Este Pokémon ya está en el equipo."); //Valida que el pokemon ya este en el equipo
+      alert("This pokemon is already in the team"); //Valida que el pokemon ya este en el equipo
       return;
     }
 
     if (team.pokemon.length >= 6) {
-      alert("El equipo ya tiene 6 Pokémon. No puedes agregar más."); //Valida que el equipo no este completo
+      alert("The team is full. You can't add more pokemon"); //Valida que el equipo no este completo
       return;
     }
 
@@ -187,23 +209,55 @@ function Manage() {
   return (
     <div className="h-screen  w-full flex flex-col gap-3 items-center text-white">
       <Navbar />
-      <div className="flex gap-5 ">
-        <h1 className="text-3xl font-bold">{team.name}</h1>
-        <button
-          onClick={handleDeleteTeam}
-          className="bg-[#cc285f] hover:brightness-95 text-white px-5 py-1 rounded-md font-bold"
-        >
-          Delete
-        </button>
-      </div>
-      <div className="flex lg:hidden gap-2">
+      <div className="flex gap-5 items-center">
+        <div className="flex flex-col lg:flex-row gap-2 items-center ">
+          {editing ? (
+            <input
+              type="text"
+              value={teamName}
+              onChange={handleNameChange}
+              className="w-full px-2 py-1  bg-[#393939] rounded-md border-gray-700 border-2 text-white lg:rounded-r-none
+                 focus:outline-none focus:ring-2 focus:ring-[#cc285f] "
+            />
+          ) : (
+            <h1 className="text-3xl font-bold">{team.name}</h1>
+          )}
+          <div className="flex gap-2">
+            {editing ? (
+              <button
+                onClick={handleSaveName}
+                className="bg-[#cc285f] hover:brightness-95 lg:rounded-l-none text-white px-5  py-1 rounded-md font-bold"
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                onClick={handleEditName}
+                className="bg-[#cc285f] hover:brightness-95 text-white px-5 py-1 rounded-md font-bold"
+              >
+                Edit
+              </button>
+            )}
+                      <button
+            onClick={handleDeleteTeam}
+            className="bg-[#cc285f] hover:brightness-95 text-white px-5 py-1 rounded-md font-bold"
+          >
+            Delete
+          </button>
+          <div className="flex lg:hidden gap-2">
         <button
           onClick={handleTabChange}
           className="bg-[#cc285f] text-white px-5 py-1 rounded-md font-bold"
         >
-          Change Tab
+          {!tabChange? "Add pokemon": "Manage"}
         </button>
       </div>
+          </div>
+
+
+        </div>
+      </div>
+    
       <div className="grid-cols-1 lg:grid-cols-2 grid w-11/12 overflow-hidden justify-center">
         <div
           className={`w-full ${
