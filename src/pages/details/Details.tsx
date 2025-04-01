@@ -5,8 +5,8 @@ import { useParams } from "react-router-dom";
 import { getPokemon } from "../../services/pokemonService";
 import {
   PokeDetails,
-  Team,
-  TeamPokemon,
+  Pokemon,
+  Team
 } from "../../interfaces/pokemonInterface";
 import TypeCard from "../../components/Cards/TypeCard";
 import { capitalizeFirstLetter } from "../../utils/functions";
@@ -22,7 +22,7 @@ function Details() {
     return savedTeams ? JSON.parse(savedTeams) : [];
   });
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [pokemonAdd, setPokemonAdd] = useState<TeamPokemon>();
+  const [pokemonAdd, setPokemonAdd] = useState<Pokemon>();
 
   //Recoleccion de datos ---------------------------------------------------------------------------------------------------
   //Funcion que recolecta datos iniciales
@@ -49,6 +49,7 @@ function Details() {
         id: pokemon.id,
         name: pokemon.name,
         image: pokemon.sprite,
+        sprite: pokemon.sprite
       });
     }
     setShowModal(true);

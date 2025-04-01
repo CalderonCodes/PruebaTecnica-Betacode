@@ -41,6 +41,7 @@ function Manage() {
       const response = await getPokemon(name);
       if (response) {
         setNewMember({
+          id: response.id,
           name: response.name,
           image: response.sprite,
           sprite: response.sprite,

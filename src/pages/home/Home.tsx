@@ -207,6 +207,7 @@ function Home() {
             {pokemonList?.map((pokemon) => (
               <PokeCard
                 key={pokemon.name}
+                id={pokemon.id}
                 name={pokemon.name}
                 image={pokemon.image}
                 sprite={pokemon.sprite}

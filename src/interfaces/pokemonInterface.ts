@@ -1,6 +1,8 @@
 
 //Interface de respuesta de listado de pokemon
 export interface Pokemon {
+  
+  id: number;
   name: string;
   image: string;
   sprite: string;
@@ -17,12 +19,7 @@ export interface PokeDetails {
   sprite: string;
 }
 
-//Interface DTO de pokemon para ser agregado a equipo
-export interface TeamPokemon {
-  id: number;
-  name: string;
-  image: string;
-}
+
 
 //Interface de datos de un equipo
 export interface Team {
