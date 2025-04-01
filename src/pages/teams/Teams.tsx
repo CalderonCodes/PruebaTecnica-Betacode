@@ -32,11 +32,11 @@ function Teams() {
       <h1 className="font-bold text-3xl">My Teams</h1>
       <button
         onClick={addTeam}
-        className="bg-[#cc285f] text-white font-bold text-lg px-3 py-1 rounded-xl"
+        className="bg-[#cc285f] text-white font-bold text-lg px-3 py-1 rounded-md"
       >
         New Team
       </button>
-      <div className="w-full grid lg:grid-cols-2 grid-cols-1 items-center px-2 gap-5">
+      <div className="w-full grid lg:grid-cols-2 grid-cols-1 items-center px-2 gap-5 py-4">
         {teams.map((team) => (
           <TeamCard key={team.name} pokemonTeam={team} />
         ))}

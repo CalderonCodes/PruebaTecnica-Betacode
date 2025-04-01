@@ -24,7 +24,7 @@ function TypeCard({ name }: { name: string }) {
   const typeColor = typeColors[name || "bg-gray-200"];
   return (
     <div
-      className={`w-20 h-8 lg:w-24 lg:h-8 ${typeColor}  font-bold text-lg border border-white rounded-sm flex items-center justify-center`}
+      className={`w-24 h-8 lg:w-32 lg:h-8 ${typeColor}  font-bold text-lg border border-white rounded-sm flex items-center justify-center`}
     >
       {name.toUpperCase()}
     </div>

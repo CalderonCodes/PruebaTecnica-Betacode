@@ -147,11 +147,11 @@ function Home() {
             id="search"
             value={searchInput}
             onChange={handleInputChange}
-            className="w-full p-2 bg-white rounded-md rounded-r-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 bg-[#393939] rounded-md border-gray-700 border-2 text-white rounded-r-none focus:outline-none focus:ring-2 focus:ring-[#cc285f] "
           />
           <button
             onClick={handleSearch}
-            className="bg-[#cc285f]  rounded-md rounded-l-none px-3 text-white"
+            className="bg-[#cc285f] border-[#cc285f]  border-2  rounded-md rounded-l-none px-3 font-bold text-white hover:brightness-95"
           >
             Search
           </button>
@@ -166,7 +166,7 @@ function Home() {
             <select
               onChange={handleTypeChange}
               id="pokemonType"
-              className="w-full p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 focus:outline-none bg-[#393939] rounded-md border-gray-700 border-2 text-white focus:ring-2 focus:ring-[#cc285f]"
             >
               {types.map((type, index) => (
                 <option key={type.name} value={index + 1}>
@@ -184,7 +184,7 @@ function Home() {
             <select
               onChange={handleAbilityChange}
               id="pokemonAbility"
-              className="w-full p-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 focus:outline-none bg-[#393939] rounded-md border-gray-700 border-2 text-white focus:ring-2 focus:ring-[#cc285f] "
             >
               {abilities.map((ability) => (
                 <option key={ability.name} value={ability.name}>
@@ -195,7 +195,7 @@ function Home() {
           </div>
         </div>
 
-        {/* Listado de pokemon */}
+        {/* Listado de pokemon-------------------------------------------------------------------------- */}
         {pokemonList?.length == 0 ? (
           <div className="w-full flex  justify-center  h-full">
             <h1 className="text-center text-3xl text-white p-5 font-bold">
@@ -222,7 +222,7 @@ function Home() {
           <button
             type="button"
             onClick={handlePrev}
-            className="bg-[#cc285f] rounded-md rounded-r-none p-3 text-white font-bold"
+            className="bg-[#cc285f]  text-white font-bold text-lg px-3 py-2 rounded-lg rounded-r-none shadow-lg  shadow-white/5 hover:shadow-none hover:brightness-95"
           >
             Anterior
           </button>
@@ -231,7 +231,7 @@ function Home() {
         <button
           type="button"
           onClick={handleNext}
-          className="bg-[#cc285f] rounded-md rounded-l-none p-3 text-white font-bold"
+          className="bg-[#cc285f]  text-white font-bold text-lg px-3 py-2 rounded-lg rounded-l-none shadow-lg  shadow-white/5 hover:shadow-none hover:brightness-95"
         >
           Siguiente
         </button>

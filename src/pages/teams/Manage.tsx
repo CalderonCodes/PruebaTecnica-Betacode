@@ -4,6 +4,10 @@ import { Pokemon, Team } from "../../interfaces/pokemonInterface";
 import Navbar from "../../components/Navigation/Navbar";
 import { getAllPokemon, getPokemon } from "../../services/pokemonService";
 import { capitalizeFirstLetter } from "../../utils/functions";
+import NewMemberCard from "../../components/Cards/NewMemberCard";
+import MemberCard from "../../components/Cards/MemberCard";
+
+
 
 function Manage() {
   const { id } = useParams<{ id: string }>(); // Obtener parametro de la url
@@ -37,7 +41,11 @@ function Manage() {
     try {
       const response = await getPokemon(name);
       if (response) {
-        setNewMember(response);
+        setNewMember({
+          name: response.name,
+          image: response.sprite,
+          sprite: response.sprite,
+        });
       }
     } catch (error) {
       console.log(error);
@@ -133,7 +141,8 @@ function Manage() {
   const handleDeleteTeam = () => {
     if (!team) return; //Si el equipo no existe no se ejecuta
 
-    const confirmDelete = window.confirm( //Ventana de confirmacion
+    const confirmDelete = window.confirm(
+      //Ventana de confirmacion
       `¿Estás seguro de que quieres eliminar el equipo "${team.name}"?`
     );
     if (!confirmDelete) return;
@@ -182,7 +191,7 @@ function Manage() {
         <h1 className="text-3xl font-bold">{team.name}</h1>
         <button
           onClick={handleDeleteTeam}
-          className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold"
+          className="bg-[#cc285f] hover:brightness-95 text-white px-5 py-1 rounded-md font-bold"
         >
           Delete
         </button>
@@ -190,7 +199,7 @@ function Manage() {
       <div className="flex lg:hidden gap-2">
         <button
           onClick={handleTabChange}
-          className="bg-[#cc285f] text-white px-5 py-1 rounded font-bold"
+          className="bg-[#cc285f] text-white px-5 py-1 rounded-md font-bold"
         >
           Change Tab
         </button>
@@ -202,27 +211,11 @@ function Manage() {
           } lg:flex flex-col gap-2 lg:px-10 py-5`}
         >
           {team.pokemon.map((pokemon) => (
-            <div
+            <MemberCard
               key={pokemon.name}
-              className="flex items-center gap-3 w-full bg-white text-black  justify-between p-2 rounded"
-            >
-              <figure className="w-16 h-16 lg:w-18  lg:h-18  flex justify-center items-center bg-[#cc285f] rounded-full ml-2">
-                <img
-                  className="w-full h-full object-contain content-center mb-3 "
-                  src={pokemon.image}
-                  alt=""
-                />
-              </figure>
-              <p className="font-bold text-lg">
-                {capitalizeFirstLetter(pokemon.name)}
-              </p>
-              <button
-                onClick={() => removePokemon(pokemon.name)}
-                className="bg-[#cc285f] text-white px-2 py-1 lg:px-4 font-bold rounded "
-              >
-                Remove
-              </button>
-            </div>
+              handleAdd={removePokemon}
+              pokemon={pokemon}
+            />
           ))}
         </div>
         {pokemonList && (
@@ -239,11 +232,12 @@ function Manage() {
                 id="search"
                 value={searchInput}
                 onChange={handleInputChange}
-                className="w-full p-2 bg-white rounded-md rounded-r-none text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2  bg-[#393939] rounded-md border-gray-700 border-2 text-white rounded-r-none
+                 focus:outline-none focus:ring-2 focus:ring-[#cc285f] "
               />
               <button
                 onClick={handleSearch}
-                className="bg-[#cc285f]  rounded-md rounded-l-none px-3 text-white"
+                className="bg-[#cc285f] hover:brightness-95 rounded-md rounded-l-none px-3 font-bold text-white"
               >
                 Search
               </button>
@@ -262,7 +256,7 @@ function Manage() {
                 <button
                   onClick={handleNext}
                   type="button"
-                  className="bg-[#cc285f] rounded-md rounded-l-none p-1 text-white font-bold"
+                  className="bg-[#cc285f] hover:brightness-95 rounded-md rounded-l-none p-1 text-white font-bold"
                 >
                   Siguiente
                 </button>
@@ -270,7 +264,7 @@ function Manage() {
             </div>
 
             <div
-              className={`flex flex-col gap-2 max-h-1/4  lg:h-[27%]  ${
+              className={`flex flex-col gap-2 max-h-1/4  lg:h-[27%] py-2  ${
                 pokemonList.length > 1 && "overflow-y-scroll"
               } 
                           [&::-webkit-scrollbar]:w-2
@@ -280,27 +274,11 @@ function Manage() {
                         dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500`}
             >
               {pokemonList.map((pokemon) => (
-                <div
+                <NewMemberCard
                   key={pokemon.name}
-                  className="flex items-center gap-3 w-full bg-white text-black  justify-between p-2 rounded"
-                >
-                  <figure className="w-16 h-16 lg:w-20  lg:h-16  flex justify-center items-center bg-[#cc285f] rounded-full ml-2">
-                    <img
-                      className="w-full h-full object-contain content-center mb-3 "
-                      src={pokemon.sprite}
-                      alt=""
-                    />
-                  </figure>
-                  <p className="font-bold text-lg">
-                    {capitalizeFirstLetter(pokemon.name)}
-                  </p>
-                  <button
-                    onClick={() => handleAdd(pokemon.name)}
-                    className="bg-[#cc285f] text-white px-2 lg:px-4 font-bold py-1 rounded "
-                  >
-                    Add
-                  </button>
-                </div>
+                  handleAdd={handleAdd}
+                  pokemon={pokemon}
+                />
               ))}
             </div>
           </div>

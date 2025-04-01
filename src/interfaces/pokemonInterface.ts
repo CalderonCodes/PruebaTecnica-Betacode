@@ -65,3 +65,11 @@ export interface DetailedAPIResponse {
     };
   };
 }
+
+export interface MemberCardProps {
+  pokemon: {
+    name: string;
+    sprite: string;
+  };
+  handleAdd: (name: string) => void;
+}
