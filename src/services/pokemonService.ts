@@ -145,9 +145,9 @@ export const getTypes = async () => {
           
         if (response.status === 200) {
           return response.data.results;
-        } else {
+        } 
           return [];
-        }
+        
       } catch (error) {
         console.error("An error occurred:", error);
         return [];

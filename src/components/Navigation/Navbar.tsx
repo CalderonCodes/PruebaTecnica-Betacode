@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Navbar() {
   return (
     <nav className="bg-[#191919] p-4 w-full shadow-2xl shadow-black-700/50">
@@ -8,12 +10,12 @@ function Navbar() {
         </div>
 
         <div className="flex space-x-4 font-bold">
-          <a href="/" className="hover:text-gray-300 text-white">
+          <Link to="/" className="hover:text-gray-300 text-white">
             Home
-          </a>
-          <a href="/teams" className="hover:text-gray-300 text-white">
+          </Link>
+          <Link to="/teams" className="hover:text-gray-300 text-white">
             Teams
-          </a>
+          </Link>
         </div>
       </div>
     </nav>
