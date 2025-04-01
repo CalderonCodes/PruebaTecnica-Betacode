@@ -69,7 +69,7 @@ function Details() {
   return (
     <div className="h-screen min-h-screen flex flex-col items-center text-white overflow-hidden relative ">
       <Navbar />
-      <img src={'/public/poke.svg'}  className="w-full h-full absolute hidden lg:flex -z-10 left-1/3 top-10 opacity-10" />
+      <img src={'/poke.svg'}  className="w-full h-full absolute hidden lg:flex -z-10 left-1/3 top-10 opacity-10" />
       {!pokemon ? (
         <p> Cargando</p>
       ) : (
